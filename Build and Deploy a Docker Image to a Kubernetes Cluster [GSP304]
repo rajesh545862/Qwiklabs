@@ -1,0 +1,58 @@
+GSP304 : Build and Deploy a Docker Image to a Kubernetes Cluster
+----------------------------------------------------------------
+
+
+Challenge scenario:
+-------------------
+
+Your development team is interested in adopting a containerized microservices 
+approach to application architecture. You need to test a sample application they
+have provided for you to make sure that that it can be deployed to a Google Kubernetes
+container. The development group provided a simple Go application called echo-web with a Dockerfile
+and the associated context that allows you to build a Docker image immediately.
+
+
+Your challenge:
+---------------
+
+To test the deployment, you need to download the sample application, then build the Docker container
+image using a tag that allows it to be stored on the Container Registry. Once the image has been built,
+you'll push it out to the Container Registry before you can deploy it.
+
+With the image prepared you can then create a Kubernetes cluster, then deploy the sample application to the cluster.
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+<!-- Built Docker image with tag V1 -->
+
+gsutil cp gs://sureskills-ql/challenge-labs/ch04-kubernetes-app-deployment/echo-web.tar.gz .
+
+OR
+
+gsutil cp gs://$DEVSHELL_PROJECT_ID/echo-web.tar.gz .
+
+<!-- Extract downloaded zip -->
+
+tar -xvf echo-web.tar.gz
+
+gcloud builds submit --tag gcr.io/$DEVSHELL_PROJECT_ID/echo-app:v1 .
+
+<!-- Create Kubernetes cluster -->
+
+gcloud container clusters create echo-cluster --num-nodes 2 --zone us-central1-a --machine-type n1-standard-2     
+
+<!-- Deploy application to Kubernetes cluster -->
+
+kubectl create deployment echo-web --image=gcr.io/qwiklabs-resources/echo-app:v1
+
+<!-- Expose app to allow external access -->
+
+kubectl expose deployment echo-web --type=LoadBalancer --port=80 --target-port=8000
+
+<!-- Extract Kubernetes services -->
+
+kubectl get svc
+
+-------------------------------------------------------------------------------------------------------------------------------------
+                                                        Congratulations!!!
